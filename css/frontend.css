@@ -1,0 +1,21 @@
+.webspark-media-uploader-wrapper {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.webspark-media-uploader-wrapper button.button {
+    padding: 1rem;
+    cursor: pointer;
+    grid-column: 1 / -1;
+}
+
+.webspark-products-table :where(td, th) {
+    border: 1px solid;
+    padding: 0.5rem 1rem;
+    text-align: center;
+}
+
+.webspark-products-table {
+    border-collapse: collapse;
+}
