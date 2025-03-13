@@ -13,11 +13,6 @@
 
 if (!defined('ABSPATH')) exit;
 
-require_once dirname(__FILE__) . '/wepspark-add-product-form.php';
-require_once dirname(__FILE__) . '/webspark-my-products-table.php';
-require_once dirname(__FILE__) . '/webspark-product.php';
-
-
 class Webspark_My_Product
 {
     function __construct()
@@ -25,7 +20,7 @@ class Webspark_My_Product
         register_activation_hook(__FILE__, [$this, 'webspark_activate']);
         register_deactivation_hook(__FILE__, [$this, 'webspark_deactivate']);
 
-        add_action('init', [$this, 'register_new_item_endpoint']);
+        add_action('init', [$this, 'init']);
 
         add_filter('woocommerce_get_query_vars', [$this, 'new_item_query_vars']);
         add_filter('ajax_query_attachments_args', [$this, 'filter_media']);
@@ -41,20 +36,16 @@ class Webspark_My_Product
         add_filter('woocommerce_endpoint_add-product_title', [$this, 'title_for_add_product_page']);
         add_filter('woocommerce_endpoint_my-products_title', [$this, 'title_for_my_products_page']);
 
-
         add_action('template_redirect', [$this, 'save_product']);
         add_action('template_redirect', [$this, 'update_product']);
         add_action('template_redirect', [$this, 'delete_product']);
-
-        // add_action('woocommerce_email')
-
 
         add_action('webspark_product_updated', [$this, 'trigger_email'], 10, 2);
     }
 
     function webspark_activate()
     {
-        $this->register_new_item_endpoint();
+        $this->init();
         flush_rewrite_rules();
     }
 
@@ -63,8 +54,12 @@ class Webspark_My_Product
         flush_rewrite_rules();
     }
 
-    function register_new_item_endpoint()
+    function init()
     {
+        require_once dirname(__FILE__) . '/wepspark-add-product-form.php';
+        require_once dirname(__FILE__) . '/webspark-my-products-table.php';
+        require_once dirname(__FILE__) . '/webspark-product.php';
+
         add_rewrite_endpoint('add-product', EP_ROOT | EP_PAGES);
         add_rewrite_endpoint('my-products', EP_ROOT | EP_PAGES);
     }
