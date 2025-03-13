@@ -43,6 +43,17 @@
     
             file_frame.open();
         });
+
+        $('[data-webspark-delete-form]').on('submit', function(ev) {
+            ev.preventDefault();
+            const form = this;
+            const confirm = window.confirm('Do you want to delete the product?');
+
+            if(confirm) {
+                form.submit();
+            }
+
+        })
     });
     
     })(jQuery);

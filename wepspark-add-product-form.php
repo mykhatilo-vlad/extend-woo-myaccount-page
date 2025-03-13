@@ -2,7 +2,6 @@
 require_once dirname(__FILE__) . '/webspark-media.php';
 
 
-
 class Webspark_Add_Product_Form
 {
     private $product = null;
@@ -74,7 +73,7 @@ class Webspark_Add_Product_Form
                 <button class="woocommerce-Button button wp-element-button" name="<?php echo $action; ?>">Save Product</button>
                 <input type="hidden" name="action" value="<?php echo $action; ?>" />
 
-                <?php if($this->product) {
+                <?php if ($this->product) {
                     printf('<input type="hidden" name="product_id" value="%s">', $this->product->get_id());
                 } ?>
             </p>

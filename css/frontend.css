@@ -19,3 +19,11 @@
 .webspark-products-table {
     border-collapse: collapse;
 }
+
+.webspark-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    list-style: none;
+    padding: 0;
+}

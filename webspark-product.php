@@ -36,7 +36,6 @@ class Webspark_Product extends WC_Product
     public function get_data_for_table() {
 
         return [
-            'id' => $this->get_id(),
             'title' => $this->get_title(),
             'qty' => $this->get_stock_quantity(),
             'price' => wc_price($this->get_regular_price()),
