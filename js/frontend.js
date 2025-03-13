@@ -8,23 +8,10 @@
             const $parent = $(this).parent();
             const mediaIdsInput = $parent.find('input[name="media_ids"]');
     
-            // if the file_frame has already been created, just reuse it
             if ( file_frame ) {
                 file_frame.open();
                 return;
             } 
-
-            const selection = new wp.media.model.Selection();
-            const selectedids = mediaIdsInput.val();
-            if(selectedids) {
-                selectedids.split(',').forEach( (id) => {
-                    const attachment = wp.media.attachment(id);
-                    attachment.fetch();
-                    selection.add(attachment);
-                });
-            }
-            
-            console.log(selection)
     
             file_frame = wp.media.frames.file_frame = wp.media({
                 title: $( this ).data( 'uploader_title' ),
@@ -35,12 +22,14 @@
                 library: {
                     type: 'image' // Restrict to images only
                 },
-                selection,
             });
     
             file_frame.on( 'select', function() {
                 const attachment = file_frame.state().get('selection').toArray();
                 const newIds = [];
+
+                $parent.find('img').remove();
+                
                 attachment.forEach((item) => {
                     const {id, url} = item.toJSON();
                     newIds.push(id);
@@ -49,7 +38,7 @@
                     $parent.append(newImage);
                 });
 
-                mediaIdsInput.val( mediaIdsInput.val() ? [mediaIdsInput.val(), ...newIds].join(',') : newIds.join(',') );
+                mediaIdsInput.val( newIds.join(',') );
             });
     
             file_frame.open();

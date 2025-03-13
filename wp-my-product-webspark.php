@@ -12,9 +12,10 @@
 
 if (!defined('ABSPATH')) exit;
 
-require_once dirname(__FILE__) . '\wepspark-add-product-form.php';
-require_once dirname(__FILE__) . '\webspark-my-products-table.php';
-require_once dirname(__FILE__) . '\webspark-product.php';
+require_once dirname(__FILE__) . '/wepspark-add-product-form.php';
+require_once dirname(__FILE__) . '/webspark-my-products-table.php';
+require_once dirname(__FILE__) . '/webspark-product.php';
+require_once dirname(__FILE__) . '/webspark-custom-email.php';
 
 
 class Webspark_My_Porduct
@@ -37,6 +38,9 @@ class Webspark_My_Porduct
         add_filter('woocommerce_endpoint_my-products_title', [$this, 'title_for_my_products_page']);
 
         add_action('template_redirect', [$this, 'save_product']);
+        add_action('template_redirect', [$this, 'update_product']);
+
+        add_filter('woocommerce_email_classes', [$this, 'register_email'], 90, 1);
     }
 
     function enqueue_scripts()
@@ -99,7 +103,7 @@ class Webspark_My_Porduct
     function content_for_add_product_page()
     {
         $product_id = $_GET['id'] ?? null;
-        $form = new Webspark_Add_Product_Form( $product_id );
+        $form = new Webspark_Add_Product_Form($product_id);
         $form->render_form();
     }
 
@@ -121,7 +125,7 @@ class Webspark_My_Porduct
 
     function save_product()
     {
-        $nonce_value = wc_get_var($_REQUEST['save-product-form-nonce'], wc_get_var($_REQUEST['_wpnonce'], ''));
+        $nonce_value = wc_get_var($_REQUEST['save_product_form-nonce'], wc_get_var($_REQUEST['_wpnonce'], ''));
 
         if (! wp_verify_nonce($nonce_value, 'save_product_form')) {
             return;
@@ -131,6 +135,26 @@ class Webspark_My_Porduct
             return;
         }
 
+        $this->create_update_product();
+    }
+
+    function update_product()
+    {
+        $nonce_value = wc_get_var($_REQUEST['update_product_form-nonce'], wc_get_var($_REQUEST['_wpnonce'], ''));
+
+        if (! wp_verify_nonce($nonce_value, 'update_product_form')) {
+            return;
+        }
+
+        if (empty($_POST['action']) || 'update_product_form' !== $_POST['action']) {
+            return;
+        }
+
+        $this->create_update_product();
+    }
+
+    function create_update_product()
+    {
         wc_nocache_headers();
 
         $user_id = get_current_user_id();
@@ -149,12 +173,20 @@ class Webspark_My_Porduct
             return;
         }
 
-        $new_product = wp_insert_post([
+        $product_args = [
             'post_status' => 'pending',
             'post_type' => 'product',
             'post_title' => $title,
             'post_content' => $desc,
-        ]);
+        ];
+
+        $product_id = $_POST['product_id'] ?? null;
+
+        if ($product_id) {
+            $product_args['ID'] = $product_id;
+        }
+
+        $new_product = wp_insert_post($product_args);
 
         if (is_wp_error($new_product)) {
             return;
@@ -166,6 +198,15 @@ class Webspark_My_Porduct
             'qty' => $qty,
             'media' => $media
         ]);
+
+        do_action('webspark_product_updated', $new_product, $product_id);
+    }
+
+    function register_email($emails)
+    {
+        $emails['Webspark_Products_Update_Email'] = new Webspark_Products_Update_Email();
+
+        return $emails;
     }
 }
 

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '\webspark-product.php';
+require_once dirname(__FILE__) . '/webspark-product.php';
 
 class Webspark_My_Products_Table extends WP_Query
 {

@@ -1,5 +1,8 @@
 <?php
 
+if ( ! class_exists( 'WC_Product' ) ) {
+	return;
+}
 class Webspark_Product extends WC_Product
 {
 

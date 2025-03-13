@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '\webspark-media.php';
+require_once dirname(__FILE__) . '/webspark-media.php';
 
 
 
@@ -17,9 +17,9 @@ class Webspark_Add_Product_Form
     }
 
     function render_form()
-    { 
+    {
         $media_button = new Webspark_Media();
-        ?>
+?>
 
         <form action="" method="post" class="woocommerce-AddProductForm">
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
@@ -50,27 +50,33 @@ class Webspark_Add_Product_Form
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                 <?php
                 $media_ids = [];
-                if($this->product) {
+                if ($this->product) {
                     $main_image = $this->product->get_image_id();
 
-                    if($main_image) {
+                    if ($main_image) {
                         $media_ids[] = $main_image;
                     }
 
                     $gallery = $this->product->get_gallery_image_ids();
-                    if($gallery) {
+                    if ($gallery) {
                         $media_ids = [...$media_ids, ...$gallery];
                     }
-
-                } 
-                echo $media_button->render_field($media_ids); 
+                }
+                echo $media_button->render_field($media_ids);
                 ?>
             </p>
 
             <p>
-                <?php wp_nonce_field('save_product_form', 'save-product-form-nonce'); ?>
-                <button class="woocommerce-Button button wp-element-button" name="save_product_form">Save Product</button>
-                <input type="hidden" name="action" value="save_product_form" />
+                <?php
+                $action = $this->product ? 'update_product_form' : 'save_product_form';
+                wp_nonce_field($action, "{$action}-nonce");
+                ?>
+                <button class="woocommerce-Button button wp-element-button" name="<?php echo $action; ?>">Save Product</button>
+                <input type="hidden" name="action" value="<?php echo $action; ?>" />
+
+                <?php if($this->product) {
+                    printf('<input type="hidden" name="product_id" value="%s">', $this->product->get_id());
+                } ?>
             </p>
         </form>
 
