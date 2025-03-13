@@ -1,5 +1,6 @@
 # WP My Product Webspark
 
+- you have to have woocommerce plugin installed.
 - download the repository as zip.
 - got to your website admin: Plugins -> Add New Plugin.
 - click Upload Plugin and select downloaded zip.
